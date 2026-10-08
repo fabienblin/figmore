@@ -8,7 +8,20 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app"><p style="padding:24px;color:#9a9ea6">Loading…</p></div>
+  <noscript><p style="padding:24px">figmore needs JavaScript.</p></noscript>
+  <script>
+    // Surface startup failures (blocked modules, old browser, file://) instead of a blank page.
+    function figmoreFail(msg) {
+      var a = document.getElementById('app');
+      a.textContent = 'figmore failed to start: ' + msg + ' — open it through the Go server (http://127.0.0.1:8080), not as a file.';
+      a.style.cssText = 'padding:24px;color:#f2555a';
+    }
+    window.addEventListener('error', function (e) {
+      figmoreFail(e.message || 'could not load ' + ((e.target && (e.target.src || e.target.href)) || 'a resource'));
+    }, true);
+    window.addEventListener('unhandledrejection', function (e) { figmoreFail(String(e.reason)); });
+  </script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

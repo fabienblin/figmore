@@ -6,6 +6,7 @@ import (
 	"flag"
 	"io/fs"
 	"log"
+	"mime"
 	"net/http"
 )
 
@@ -13,6 +14,17 @@ import (
 var webFS embed.FS
 
 func newHandler(store *Store) http.Handler {
+	// Browsers refuse ES modules served as text/plain. Go otherwise derives
+	// types from the OS registry/mime files, which can be wrong (e.g. Windows).
+	for ext, typ := range map[string]string{
+		".js":   "text/javascript; charset=utf-8",
+		".css":  "text/css; charset=utf-8",
+		".html": "text/html; charset=utf-8",
+	} {
+		if err := mime.AddExtensionType(ext, typ); err != nil {
+			log.Printf("mime %s: %v", ext, err)
+		}
+	}
 	static, err := fs.Sub(webFS, "web")
 	if err != nil {
 		panic(err)
