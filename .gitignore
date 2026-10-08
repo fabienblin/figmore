@@ -31,3 +31,7 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+*.db
+*.db-shm
+*.db-wal
+/figmore
